@@ -11,18 +11,31 @@
 Product.destroy_all
 ProductVariant.destroy_all
 Product.create!(
-  name: "Calça",
+  name: "Calça1",
   price: 45,
+  category: "Calças",
   active: true,
   product_variants_attributes: [
-    { size: "M", color: "Cinza" },
-    { size: "G", color: "Preto" }
+    { size: "M", color: "Cinza", stock: 10 },
+    { size: "G", color: "Preto", stock: 10 }
+  ]
+)
+
+Product.create!(
+  name: "Calça2",
+  price: 55,
+  category: "Calças",
+  active: true,
+  product_variants_attributes: [
+    { size: "M", color: "Cinza", stock: 10 },
+    { size: "G", color: "Preto", stock: 10 }
   ]
 )
 
 Product.create!(
   name: "Blusa",
   price: 55,
+  category: "Blusas",
   active: true,
   product_variants_attributes: [
     { size: "P", color: "Vermelho", stock: 10 },
@@ -34,6 +47,7 @@ Product.create!(
 Product.create!(
   name: "Sapato",
   price: 35,
+  category: "Sapatos",
   active: true,
   product_variants_attributes: [
     { size: "36", color: "Cinza", stock: 10 },
@@ -44,6 +58,7 @@ Product.create!(
 Product.create!(
   name: "Shorts",
   price: 60,
+  category: "Shorts",
   active: true,
   product_variants_attributes: [
     { size: "35", color: "Cinza", stock: 10 },
@@ -54,6 +69,7 @@ Product.create!(
 Product.create!(
   name: "Casaco",
   price: 55,
+  category: "Casacos",
   active: true,
   product_variants_attributes: [
     { size: "M", color: "Cinza", stock: 10 },
@@ -64,6 +80,7 @@ Product.create!(
 Product.create!(
   name: "Tênis",
   price: 35,
+  category: "Calçados",
   active: true,
   product_variants_attributes: [
     { size: "36", color: "Cinza", stock: 10 },
@@ -74,6 +91,7 @@ Product.create!(
 Product.create!(
   name: "Meia",
   price: 5,
+  category: "Acessórios",
   active: true,
   product_variants_attributes: [
     { size: "P", color: "Cinza", stock: 10 },

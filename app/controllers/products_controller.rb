@@ -5,6 +5,10 @@ class ProductsController < ApplicationController
     else
       @products = Product.where(active: true)
     end
+
+    if params[:category].present?
+      @products = @products.where(category: params[:category])
+    end
   end
 
   def show

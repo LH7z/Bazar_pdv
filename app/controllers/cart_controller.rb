@@ -2,6 +2,7 @@ class CartController < ApplicationController
   def show
     @cart = session[:cart] || {}
     @variants = ProductVariant.where(id: @cart.keys).index_by(&:id)
+    @cart = @cart.select { |variant_id, _| @variants.key?(variant_id.to_i) }
   end
 
   def add
@@ -9,24 +10,30 @@ class CartController < ApplicationController
     quantity = params[:quantity].to_i
     return redirect_to products_path, alert: "Quantidade deve ser maior que zero!" if quantity <= 0
 
-    session[:cart][params[:variant_id]] ||= 0
-    session[:cart][params[:variant_id]] += quantity
-    if session[:cart][params[:variant_id]] > ProductVariant.find(params[:variant_id]).stock
-      session[:cart][params[:variant_id]] = ProductVariant.find(params[:variant_id]).stock
+    variant = ProductVariant.find_by(sku: params[:variant_id]) || ProductVariant.find_by(id: params[:variant_id])
+    return redirect_to products_path, alert: "Variante não encontrada!" unless variant
+
+    session[:cart][variant.id] ||= 0
+    session[:cart][variant.id] += quantity
+    if session[:cart][variant.id] > variant.stock
+      session[:cart][variant.id] = variant.stock
       redirect_to cart_path, alert: "Quantidade máxima disponível atingida!"
       return
     end
 
-    redirect_to cart_path, notice: "Produto adicionado ao carrinho!"
+    redirect_to cart_path, notice: "Produto adicionado ao Caixa"
   end
 
   def remove
     session[:cart] ||= {}
-    session[:cart][params[:variant_id]] ||= 0
-    session[:cart][params[:variant_id]] -= 1
+    variant = ProductVariant.find_by(sku: params[:variant_id]) || ProductVariant.find_by(id: params[:variant_id])
+    return redirect_to cart_path, alert: "Variante não encontrada!" unless variant
 
-    session[:cart].delete(params[:variant_id]) if session[:cart][params[:variant_id]] <= 0
+    session[:cart][variant.id] ||= 0
+    session[:cart][variant.id] -= 1
 
-    redirect_to cart_path, notice: "Produto removido do carrinho!"
+    session[:cart].delete(variant.id) if session[:cart][variant.id] <= 0
+
+    redirect_to cart_path, notice: "Produto removido do Caixa!"
   end
 end

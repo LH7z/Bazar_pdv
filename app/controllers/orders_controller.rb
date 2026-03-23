@@ -14,12 +14,13 @@ class OrdersController < ApplicationController
   def create
     @order = Order.new
     @order.order_items = (session[:cart] || {}).map do |variant_id, quantity|
-      variant = ProductVariant.find(variant_id)
+      variant = ProductVariant.find_by(sku: variant_id) || ProductVariant.find_by(id: variant_id)
+      next unless variant
       order_item = OrderItem.new(product_variant: variant, quantity: quantity, price: variant.product.price)
       variant.stock -= quantity
       variant.save
       order_item
-    end
+    end.compact
     @order.total = @order.order_items.sum { |item| item.quantity * item.price }
     @order.status = "paid"
     @order.payment_method = params[:payment_method]

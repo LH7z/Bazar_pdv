@@ -5,9 +5,15 @@
     <h1 class="text-3xl font-bold">Produtos</h1>
 
     <!-- Formulário de busca -->
-    <form method="get" action="/products" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+    <form id="search-form" method="get" action="/products" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
       <input type="text" name="query" placeholder="Buscar produto..."
         class="border p-2 rounded w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <select id="filter-category-btn" name="category" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition cursor-pointer">
+        <option value="">Todas as categorias</option>
+        <% @products.distinct.pluck(:category).each do |category| %>
+          <option value="<%= category %>"><%= category %></option>
+        <% end %>
+      </select>
       <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition cursor-pointer">
         Buscar
       </button>
@@ -87,6 +93,14 @@
 </script>
 
 <script>
+  document.addEventListener('turbo:load', function() {
+    const filterCategoryBtn = document.getElementById('filter-category-btn');
+    const searchForm = document.getElementById('search-form');
+
+    filterCategoryBtn.addEventListener('change', function() {
+      searchForm.submit();
+    });
+  });
   document.addEventListener('turbo:load', function() {
     const modal = document.getElementById('variant-modal');
     const modalTitle = document.getElementById('modal-title');

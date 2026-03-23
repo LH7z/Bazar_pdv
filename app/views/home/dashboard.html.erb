@@ -6,7 +6,11 @@
       <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
         <div>
           <p class="text-gray-500 font-medium">Vendas Hoje</p>
-          <p class="text-2xl font-bold text-green-600">R$ <%= '%.2f' % @orders_by_day.values.last %></p>
+          <% if @orders_by_day.values.last == nil %>
+            <p class="text-2xl font-bold text-green-600">R$ 0,00</p>
+          <% else %>
+            <p class="text-2xl font-bold text-green-600">R$ <%= '%.2f' % @orders_by_day.values.last %></p>
+          <% end %>
         </div>
         <div class="text-gray-300 text-3xl">💰</div>
       </div>
@@ -14,7 +18,11 @@
       <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
         <div>
           <p class="text-gray-500 font-medium">Ticket Médio</p>
-          <p class="text-2xl font-bold text-blue-600">R$ <%= '%.2f' % @avarege_order_value %></p>
+          <% if @avarege_order_value == nil %>
+            <p class="text-2xl font-bold text-blue-600">R$ 0,00</p>
+          <% else %>
+            <p class="text-2xl font-bold text-blue-600">R$ <%= '%.2f' % @avarege_order_value %></p>
+          <% end %>
         </div>
         <div class="text-gray-300 text-3xl">🧾</div>
       </div>
@@ -54,6 +62,11 @@
         <div class="bg-white p-6 rounded-lg shadow">
           <h2 class="text-xl font-bold text-gray-700 mb-4">Valor das Vendas por Produto</h2>
           <%= bar_chart @sales_by_product, colors: ["#3B82F6"], height: "300px" %>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-gray-700 mb-4">Vendas por Categoria</h2>
+          <%= bar_chart [{name: "Valor (R$)", data: @sales_by_category}, {name: "Quantidade", data: @quantity_by_category}], colors: ["#3B82F6", "#EF4444"], height: "300px" %>
         </div>
       </div>
     </div>
