@@ -1,0 +1,62 @@
+<div class="bg-gray-100">
+
+  <!-- HERO -->
+  <div class="bg-black text-white py-20 text-center">
+    <h1 class="text-4xl font-bold mb-4">Sistema de Gestão de Bazar</h1>
+    <p class="text-lg mb-6">Controle seus produtos, estoque e vendas de forma simples</p>
+
+    <%= link_to "Ver Produtos", products_path,
+      class: "bg-yellow-400 text-black px-6 py-3 rounded font-semibold hover:bg-yellow-300" %>
+  </div>
+
+  <!-- FUNCIONALIDADES -->
+  <div class="max-w-6xl mx-auto py-16 px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+
+    <!-- PRODUTOS -->
+    <div class="bg-white p-6 rounded-2xl shadow">
+      <h2 class="text-xl font-bold mb-2">📦 Produtos</h2>
+      <p class="text-gray-600 mb-4">Gerencie todos os itens do seu bazar</p>
+
+      <%= link_to "Ver Produtos", products_path, class: "text-blue-500 font-semibold" %>
+    </div>
+
+    <!-- VARIAÇÕES -->
+    <div class="bg-white p-6 rounded-2xl shadow">
+      <h2 class="text-xl font-bold mb-2">🎨 Variações</h2>
+      <p class="text-gray-600 mb-4">Controle tamanhos, cores e estoque</p>
+
+      <%= link_to "Adicionar Produto", new_product_path, class: "text-blue-500 font-semibold" %>
+    </div>
+
+    <!-- CAIXA -->
+    <div class="bg-white p-6 rounded-2xl shadow">
+      <h2 class="text-xl font-bold mb-2">💰 Caixa</h2>
+      <p class="text-gray-600 mb-4">Registre vendas e acompanhe faturamento</p>
+
+      <%= link_to "Abrir Caixa", cart_path, class: "text-blue-500 font-semibold" %>
+    </div>
+
+  </div>
+
+  <!-- AÇÕES RÁPIDAS -->
+  <div class="bg-white py-12">
+    <div class="max-w-4xl mx-auto text-center">
+
+      <h2 class="text-2xl font-bold mb-6">Ações rápidas</h2>
+
+      <div class="flex flex-wrap justify-center gap-4">
+
+        <%= link_to "➕ Novo Produto", new_product_path,
+          class: "bg-green-500 text-white px-5 py-2 rounded hover:bg-green-400" %>
+
+        <%= link_to "📋 Listar Produtos", products_path,
+          class: "bg-blue-500 text-white px-5 py-2 rounded hover:bg-blue-400" %>
+
+        <%= link_to "📊 Relatórios", dashboard_path,
+          class: "bg-purple-500 text-white px-5 py-2 rounded hover:bg-purple-400" %>
+
+      </div>
+    </div>
+  </div>
+
+</div>

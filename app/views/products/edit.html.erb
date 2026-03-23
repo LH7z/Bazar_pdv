@@ -1,0 +1,62 @@
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-6">Editar Produto</h1>
+
+  <%= form_with model: @product, data: { turbo: false }, html: { id: "product-form" } do |f| %>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div>
+        <%= f.label :name %>
+        <%= f.text_field :name, class: "w-full border p-2 rounded" %>
+      </div>
+
+      <div>
+        <%= f.label :price %>
+        <%= f.number_field :price, step: 0.01, class: "w-full border p-2 rounded" %>
+      </div>
+
+      <div class="col-span-2">
+        <%= f.label :description %>
+        <%= f.text_area :description, class: "w-full border p-2 rounded" %>
+      </div>
+
+      <div>
+        <%= f.label :category %>
+        <%= f.text_field :category, class: "w-full border p-2 rounded" %>
+      </div>
+    </div>
+
+    <!-- IMAGEM -->
+    <div class="mb-6">
+      <%= f.label :image, "Imagem do Produto", class: "block font-semibold mb-2" %>
+
+      <%= f.file_field :image,
+        accept: "image/*",
+        class: "w-full border p-2 rounded cursor-pointer" %>
+
+      <% if @product.image.attached? %>
+        <img src="<%= url_for(@product.image) %>"
+          class="w-32 h-32 object-cover rounded border mt-2">
+      <% end %>
+    </div>
+
+    <!-- VARIAÇÕES -->
+    <h2 class="text-xl font-semibold mb-4">Variações</h2>
+
+    <div id="variants">
+      <%= f.fields_for :product_variants do |variant_form| %>
+        <%= render "variant_fields", f: variant_form %>
+      <% end %>
+    </div>
+
+    <button type="button" id="add-variant"
+      class="bg-blue-500 text-white px-4 py-2 rounded mb-4 cursor-pointer">
+      + Adicionar variação
+    </button>
+
+    <div>
+      <%= f.submit "Atualizar Produto",
+        class: "bg-yellow-500 text-white px-6 py-2 rounded cursor-pointer" %>
+    </div>
+
+  <% end %>
+</div>

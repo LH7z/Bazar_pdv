@@ -1,0 +1,208 @@
+<div class="w-full p-6">
+
+  <!-- Cabeçalho com título, busca e novo produto -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <h1 class="text-3xl font-bold">Produtos</h1>
+
+    <!-- Formulário de busca -->
+    <form method="get" action="/products" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+      <input type="text" name="query" placeholder="Buscar produto..."
+        class="border p-2 rounded w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition cursor-pointer">
+        Buscar
+      </button>
+    </form>
+
+    <!-- Botão novo produto -->
+    <%= link_to "Novo Produto", new_product_path,
+      class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition" %>
+  </div>
+
+  <!-- Grid de produtos -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <% @products.each do |product| %>
+      <div class="bg-white shadow-md rounded-xl overflow-hidden hover:shadow-lg transition transform hover:-translate-y-1">
+
+        <!-- Imagem do produto -->
+        <div class="h-48 bg-gray-200 flex items-center justify-center">
+          <% if product.image.attached? %>
+            <%= image_tag product.image, class: "h-full w-full object-cover" %>
+          <% else %>
+            <span class="text-gray-500">Sem imagem</span>
+          <% end %>
+        </div>
+
+        <!-- Conteúdo do card -->
+        <div class="p-4 flex flex-col justify-between h-56">
+          <div>
+            <h2 class="text-lg font-semibold mb-1">
+              <%= link_to product.name, product_path(product), class: "hover:underline" %>
+            </h2>
+            <p class="text-gray-500 text-sm mb-2"><%= product.category %></p>
+            <p class="text-xl font-bold text-green-600 mb-4">
+              <%= number_to_currency(product.price, unit: "R$ ", separator: ",", delimiter: ".") %>
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button data-product-id="<%= product.id %>"
+              class="open-variant-modal bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition transform hover:scale-105 text-lg font-semibold cursor-pointer">
+              Adicionar
+            </button>
+
+            <%= link_to "Ver detalhes", product_path(product),
+              class: "block text-center bg-gray-900 text-white py-2 rounded hover:bg-black transition cursor-pointer" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Modal de Variants -->
+<div id="variant-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 p-6 relative transform transition-all max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h2 id="modal-title" class="text-2xl font-bold text-gray-800">Selecione uma variante</h2>
+      <button id="close-variant-modal"
+        class="text-gray-500 hover:text-gray-700 text-3xl font-bold leading-none">&times;</button>
+    </div>
+
+    <div id="variants-container" class="space-y-4">
+      <!-- Variants serão inseridas aqui via JavaScript -->
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <button id="cancel-variant-modal"
+        class="bg-gray-300 px-6 py-2 rounded hover:bg-gray-400 transition font-medium">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dados dos produtos em JSON para JavaScript -->
+<script type="application/json" id="products-data">
+  <%= @products.to_json(include: { product_variants: { only: [:id, :size, :color, :stock, :sku] } }).html_safe %>
+</script>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    const modal = document.getElementById('variant-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const variantsContainer = document.getElementById('variants-container');
+    const closeButtons = document.querySelectorAll('#close-variant-modal, #cancel-variant-modal');
+
+    // Dados dos produtos
+    const productsData = JSON.parse(document.getElementById('products-data').textContent);
+
+    // Limpar event listeners antigos para evitar duplicatas
+    document.querySelectorAll('.open-variant-modal').forEach(button => {
+      button.replaceWith(button.cloneNode(true));
+    });
+
+    // Event listeners para abrir modal
+    document.querySelectorAll('.open-variant-modal').forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        const product = productsData.find(p => p.id == productId);
+
+        if (product) {
+          showVariantsModal(product);
+        }
+      });
+    });
+
+    // Event listeners para fechar modal
+    closeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        modal.classList.add('hidden');
+      });
+    });
+
+    // Fechar modal clicando no fundo
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+
+    function showVariantsModal(product) {
+      modalTitle.textContent = `Selecione uma variante de ${product.name}`;
+      variantsContainer.innerHTML = '';
+
+      if (product.product_variants.length === 0) {
+        variantsContainer.innerHTML = '<p class="text-gray-500 text-center py-8">Nenhuma variante disponível para este produto.</p>';
+      } else {
+        product.product_variants.forEach(variant => {
+          const variantCard = createVariantCard(product, variant);
+          variantsContainer.appendChild(variantCard);
+        });
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function createVariantCard(product, variant) {
+      const card = document.createElement('div');
+      card.className = 'border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors';
+
+      const stockStatus = variant.stock > 0 ? 'Em estoque' : 'Fora de estoque';
+      const stockColor = variant.stock > 0 ? 'text-green-600' : 'text-red-600';
+      const buttonDisabled = variant.stock === 0 ? 'disabled opacity-50 cursor-not-allowed' : '';
+
+      card.innerHTML = `
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h3 class="font-semibold text-lg">${product.name}</h3>
+            <p class="text-gray-600">SKU: ${variant.sku || 'N/A'}</p>
+          </div>
+          <span class="text-sm ${stockColor} font-medium">${stockStatus} (${variant.stock})</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <span class="text-sm text-gray-500">Tamanho</span>
+            <p class="font-medium">${variant.size || 'N/A'}</p>
+          </div>
+          <div>
+            <span class="text-sm text-gray-500">Cor</span>
+            <p class="font-medium">${variant.color || 'N/A'}</p>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <form action="/cart/add/${variant.id}" method="post" class="flex justify-between items-center w-full">
+            <input type="hidden" name="authenticity_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+            <div class="flex items-center">
+              <button type="button" id="minus" class="bg-red-500 text-white px-4 py-1 rounded cursor-pointer">-</button>
+              <input id="quantity" type="number" value="0" min="0" max="${variant.stock}" class="w-16 text-center border rounded mx-2 focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1">
+              <button type="button" id="plus" class="bg-green-500 text-white px-4 py-1 rounded cursor-pointer">+</button>
+            </div>
+            <button type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition font-medium ${buttonDisabled}"
+              ${variant.stock === 0 ? 'disabled' : ''}>
+              Adicionar ao Carrinho
+            </button>
+          </form>
+        </div>
+      `;
+        const quantityInput = card.querySelector('#quantity');
+        const minusButton = card.querySelector('#minus');
+        const plusButton = card.querySelector('#plus');
+        minusButton.addEventListener('click', () => {
+          let currentValue = parseInt(quantityInput.value);
+          if (currentValue > 0) {
+            quantityInput.value = currentValue - 1;
+          }
+        });
+        plusButton.addEventListener('click', () => {
+          let currentValue = parseInt(quantityInput.value);
+          if (currentValue < variant.stock) {
+            quantityInput.value = currentValue + 1;
+          }
+        });
+      return card;
+    }
+  });
+</script>

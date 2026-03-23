@@ -1,0 +1,61 @@
+<div class="w-full min-h-screen bg-gray-100 p-6">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center md:text-left">Dashboard do Bazar</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="md:col-span-1 flex flex-col gap-4">
+      <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
+        <div>
+          <p class="text-gray-500 font-medium">Vendas Hoje</p>
+          <p class="text-2xl font-bold text-green-600">R$ <%= '%.2f' % @orders_by_day.values.last %></p>
+        </div>
+        <div class="text-gray-300 text-3xl">💰</div>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
+        <div>
+          <p class="text-gray-500 font-medium">Ticket Médio</p>
+          <p class="text-2xl font-bold text-blue-600">R$ <%= '%.2f' % @avarege_order_value %></p>
+        </div>
+        <div class="text-gray-300 text-3xl">🧾</div>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
+        <div>
+          <p class="text-gray-500 font-medium">Pedidos Hoje</p>
+          <p class="text-2xl font-bold text-purple-600"><%= @orders_today %></p>
+        </div>
+        <div class="text-gray-300 text-3xl">📦</div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="md:col-span-3">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-gray-700 mb-4">Vendas por Dia</h2>
+          <%= line_chart @orders_by_day, colors: ["#10B981"], curve: true, height: "300px" %>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-gray-700 mb-4">Produtos Mais Vendidos</h2>
+          <%= bar_chart @products_most_sold, colors: ["#3B82F6"], height: "300px" %>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-gray-700 mb-4">Produtos por Categoria</h2>
+          <%= bar_chart @products_by_category, colors: ["#8B5CF6"], height: "300px" %>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-gray-700 mb-4">Formas de Pagamento</h2>
+          <%= pie_chart @payments_by_method, colors: ["#F59E0B", "#EF4444", "#10B981"], donut: true, height: "300px" %>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-gray-700 mb-4">Valor das Vendas por Produto</h2>
+          <%= bar_chart @sales_by_product, colors: ["#3B82F6"], height: "300px" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

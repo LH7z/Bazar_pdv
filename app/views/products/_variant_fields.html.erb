@@ -1,0 +1,32 @@
+<meta name="turbo-visit-control" content="reload">
+<div class="variant border p-4 rounded mb-4">
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :_destroy, value: "0", class: "destroy-flag" %>
+  <div class="grid grid-cols-4 gap-4">
+
+    <div>
+      <%= f.label :size, "Tamanho" %>
+      <%= f.text_field :size, class: "w-full border p-2 rounded" %>
+    </div>
+
+    <div>
+      <%= f.label :color, "Cor" %>
+      <%= f.text_field :color, class: "w-full border p-2 rounded" %>
+    </div>
+
+    <div>
+      <%= f.label :stock, "Estoque" %>
+      <%= f.number_field :stock, class: "w-full border p-2 rounded" %>
+    </div>
+
+
+
+    <div class="flex items-end">
+      <button type="button"
+        class="remove-variant bg-red-500 text-white px-3 py-2 rounded">
+        Remover
+      </button>
+    </div>
+
+  </div>
+</div>
